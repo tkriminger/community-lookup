@@ -6,7 +6,7 @@
 <title>Community Profile Finder</title>
 
 <style>
-/* Base page shell reset */
+/* Base page shell setup */
 html, body {
     margin: 0;
     padding: 0;
@@ -15,9 +15,10 @@ html, body {
     font-family: "Avenir Next W01", "Avenir Next W00", "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: #ffffff;
     color: #2c2c2c;
+    overflow: hidden;
 }
 
-/* VIEW 1: Center look-up screen configured like an Esri landing card */
+/* VIEW 1: Clean lookup screen styled like an ArcGIS landing page element */
 .search-view {
     display: flex;
     justify-content: center;
@@ -51,7 +52,7 @@ h2 {
     margin-bottom: 12px;
 }
 
-.container p {
+p {
     font-size: 15px;
     line-height: 1.5;
     color: #595959;
@@ -109,72 +110,43 @@ input:focus {
     font-weight: 600;
 }
 
-
-/* VIEW 2: App Shell Header mimicking the screenshot styling perfectly */
+/* VIEW 2: Clean Header layout with only your single change action requirement */
 .profile-view {
     display: none; 
     flex-direction: column;
     width: 100%;
     height: 100%;
     background-color: #ffffff;
-    overflow-y: auto;
 }
 
 .context-header {
     background-color: #ffffff;
-    padding: 40px 20px 20px 20px;
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-    width: 100%;
-    box-sizing: border-box;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    z-index: 9999;
 }
 
-/* Precise deep green accent rules matching image_925eba.png */
-.green-rule {
-    border: none;
-    border-top: 2px solid #006837; 
-    width: 100%;
-    margin: 12px 0;
-}
-
-.context-header h3 {
+.brand-title-group h3 {
     margin: 0;
     color: #151515;
-    font-size: 22px;
+    font-size: 16px;
     font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;
 }
 
-.context-header p {
-    color: #2c2c2c;
-    font-size: 16px;
-    line-height: 1.6;
-    margin: 25px 0 15px 0;
-}
-
-.instruction-text {
-    font-weight: 700;
-    color: #151515;
-    margin-bottom: 20px !important;
-}
-
-.action-group {
-    display: flex;
-    justify-content: center;
-    margin-top: 15px;
-    margin-bottom: 30px;
-}
-
-/* Exact dark green button style from the screenshot */
+/* Exact dark green button background from your layout specification */
 .app-btn {
     background-color: #006837; 
     color: #ffffff;
     border: none;
-    padding: 14px 32px;
-    font-size: 14px;
-    font-weight: 700;
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 600;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.15s ease-in-out;
@@ -184,11 +156,11 @@ input:focus {
     background-color: #004d28;
 }
 
-/* Container for your live StoryMap */
+/* The full viewport container hosting the StoryMap iframe content safely */
 .iframe-container {
+    flex-grow: 1;
     width: 100%;
-    height: 80vh; /* Takes up the majority of the view below the header text */
-    border-top: 1px solid #e0e0e0;
+    height: 100%;
 }
 
 iframe {
@@ -204,7 +176,7 @@ iframe {
 <div id="searchView" class="search-view">
     <div class="container">
         <h2>Find Your Community Profile</h2>
-        <p>Enter your ZIP code to explore housing affordability and metrics within your target neighborhood block.</p>
+        <p>Enter your ZIP code to go directly to the matching profile.</p>
         <div class="search-box">
             <input id="zip" type="text" placeholder="Enter ZIP Code" maxlength="5">
             <button class="primary-btn" onclick="lookupCommunity()">View Profile</button>
@@ -215,40 +187,32 @@ iframe {
 
 <div id="profileView" class="profile-view">
     <div class="context-header">
-        <hr class="green-rule">
-        <h3>Your Community, In Context</h3>
-        <hr class="green-rule">
-        
-        <p>In cities large and small, in mountain towns and rural counties, families are confronting the same reality: Housing — and specifically, buying and owning a home — is consuming a growing share of their income. So, how does your community stack up?</p>
-        
-        <p class="instruction-text">Explore the state of housing affordability where you live:</p>
-        
-        <div class="action-group">
-            <button class="app-btn" onclick="clearZipCode()">Change zip code</button>
+        <div class="brand-title-group">
+            <h3>Community Profile Viewer</h3>
         </div>
+        <button class="app-btn" onclick="clearZipCode()">Change zip code</button>
     </div>
     
     <div id="iframeStage" class="iframe-container"></div>
 </div>
 
 <script>
-// Dictionary connecting your neighborhood ZIP keys directly to your real embed links
+// Dictionary connecting your neighborhood ZIP keys straight to the embedded story hashes/sections
 const zipLookup = {
-    "28104": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed",
-    "28105": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed",
-    "28079": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed",
-    "28110": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed",
-    "28112": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed"
+    "28104": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
+    "28105": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
+    "28079": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-gSqDae",
+    "28110": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-dh5C0l",
+    "28112": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-dh5C0l"
 };
 
-function lookupCommunity(forcedZip){
+function lookupCommunity(){
     const zipInput = document.getElementById("zip").value.trim();
-    const zip = forcedZip || zipInput;
-    const targetUrl = zipLookup[zip];
+    const targetUrl = zipLookup[zipInput];
     const result = document.getElementById("result");
 
     if(!targetUrl){
-        if(!forcedZip && result) {
+        if(result) {
             result.innerHTML = '<div class="error">ZIP code not found.</div>';
         }
         return;
@@ -256,44 +220,26 @@ function lookupCommunity(forcedZip){
 
     if(result) result.innerHTML = ''; 
 
-    // Inject the clean target StoryMap embed URL into the page window frame
+    // Inject the target StoryMap section URL straight into the clean view viewport
     const stage = document.getElementById("iframeStage");
     stage.innerHTML = `<iframe src="${targetUrl}"></iframe>`;
 
-    // Swap layouts: Hide lookup entry box and display the header text panel + frame
+    // Swap layout visibility states instantly
     document.getElementById("searchView").style.display = "none";
     document.getElementById("profileView").style.display = "flex";
 }
 
 function clearZipCode() {
-    // Clear the active iframe target
+    // Clear out active document frame content 
     document.getElementById("iframeStage").innerHTML = "";
-    // Return layout views back to normal
+    // Toggle layouts back to initial entry look-up screen
     document.getElementById("profileView").style.display = "none";
     document.getElementById("searchView").style.display = "flex";
     document.getElementById("zip").value = "";
 }
 
-// Automatic Routing setup checking URL parameters or Geolocation instantly
-window.addEventListener('DOMContentLoaded', () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const zipParam = urlParams.get('zip');
-    
-    if (zipParam) {
-        lookupCommunity(zipParam);
-    } else {
-        // Fallback: Perform background location scan to find near match profiles automatically
-        fetch('https://ipapi.co/json/')
-            .then(res => res.json())
-            .then(data => {
-                if(data && data.postal && zipLookup[data.postal]) {
-                    lookupCommunity(data.postal);
-                }
-            })
-            .catch(err => console.log("Standard initialization fallback loaded."));
-    }
-
-    // Bind the Enter key to fire code execution automatically inside the search box 
+// Bind the Enter key functionality inside the search box input element
+document.addEventListener("DOMContentLoaded", () => {
     const zipInput = document.getElementById("zip");
     if(zipInput) {
         zipInput.addEventListener("keypress", (e) => {

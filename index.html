@@ -6,26 +6,30 @@
 <title>Community Profile Finder</title>
 
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
+/* Reset page to act like a true web application wrapper */
+html, body {
     margin: 0;
     padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    overflow: hidden;
 }
 
-/* SEARCH SCREEN PORTAL */
+/* VIEW 1: Clean, centered lookup screen */
 .search-view {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    box-sizing: border-box;
-    padding: 20px;
+    width: 100%;
+    height: 100%;
+    position: fixed;
 }
 
 .container {
     max-width: 600px;
-    width: 100%;
+    width: 90%;
     background: white;
     padding: 30px;
     border-radius: 12px;
@@ -40,6 +44,7 @@ h2 {
 
 p {
     color: #555;
+    margin-bottom: 25px;
 }
 
 input {
@@ -48,6 +53,7 @@ input {
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    outline: none;
 }
 
 button {
@@ -75,16 +81,24 @@ button:hover {
     font-weight: bold;
 }
 
-/* NATIVE STORYMAP EMISSION CANVAS */
+/* VIEW 2: Full-screen profile stage */
 .profile-view {
     display: none; 
     width: 100%;
-    min-height: 100vh;
+    height: 100%;
     position: relative;
     background: white;
 }
 
-/* Floating Navigation Back Button */
+/* Make the frame completely borderless and seamless */
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Floating custom back button over the StoryMap */
 .back-btn {
     position: fixed;
     top: 15px;
@@ -112,75 +126,62 @@ button:hover {
     <div class="container">
         <h2>Find Your Community Profile</h2>
         <p>Enter your ZIP code to go directly to the matching profile.</p>
+        
         <input id="zip" type="text" placeholder="Enter ZIP Code" maxlength="5">
         <button onclick="lookupCommunity()">View Profile</button>
+        
         <div id="result"></div>
     </div>
 </div>
 
 <div id="profileView" class="profile-view">
     <button class="back-btn" onclick="goBack()">&larr; Change Location</button>
-    <div id="storymaps-target"></div>
+    <div id="iframe-target" style="width:100%; height:100%;"></div>
 </div>
 
 <script>
-// We map the common Story ID, but specify the precise target header element hash per ZIP
+// We append "?embed" BEFORE the hash. This satisfies ArcGIS framework security 
+// and triggers native browser jump actions flawlessly.
 const zipLookup = {
-    "28104": { id: "95885c16aa0649d0a1050c363b47a4e2", hash: "ref-n-zUF5U0" },
-    "28105": { id: "95885c16aa0649d0a1050c363b47a4e2", hash: "ref-n-zUF5U0" },
-    "28079": { id: "95885c16aa0649d0a1050c363b47a4e2", hash: "ref-n-gSqDae" },
-    "28110": { id: "95885c16aa0649d0a1050c363b47a4e2", hash: "ref-n-dh5C0l" },
-    "28112": { id: "95885c16aa0649d0a1050c363b47a4e2", hash: "ref-n-dh5C0l" }
+    "28104": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
+    "28105": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
+    "28079": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-gSqDae",
+    "28110": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-dh5C0l",
+    "28112": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-dh5C0l"
 };
 
 function lookupCommunity(){
     const zip = document.getElementById("zip").value.trim();
-    const match = zipLookup[zip];
+    const targetUrl = zipLookup[zip];
     const result = document.getElementById("result");
-    const container = document.getElementById("storymaps-target");
 
-    if(!match){
+    if(!targetUrl){
         result.innerHTML = '<div class="error">ZIP code not found.</div>';
         return;
     }
 
-    result.innerHTML = ''; // Wipe error notifications
+    result.innerHTML = ''; // Clear prior validation messages
 
-    // 1. Prepare a fresh DOM root element node for the script loader
-    container.innerHTML = '<div class="storymaps-root"></div>';
+    // Dynamically insert a brand new iframe node. 
+    // Creating it fresh ensures the browser reads the # hash anchor immediately on render.
+    const stage = document.getElementById("iframe-target");
+    stage.innerHTML = `<iframe src="${targetUrl}"></iframe>`;
 
-    // 2. Set up the globally required configuration object that the ArcGIS engine reads
-    window.storyMapsEmbedConfig = {
-        storyId: match.id,
-        rootSelector: '.storymaps-root'
-    };
-
-    // 3. Append the anchor hash to the window location so that the engine scrolls to the right section
-    window.location.hash = match.hash;
-
-    // 4. Inject the Advanced Embed script into our placeholder div
-    const script = document.createElement('script');
-    script.src = "https://storymaps.arcgis.com/embed/view";
-    container.appendChild(script);
-
-    // 5. Hide the search menu and display the loaded profile container seamlessly
+    // Swap visual visibility rules
     document.getElementById("searchView").style.display = "none";
     document.getElementById("profileView").style.display = "block";
 }
 
 function goBack() {
-    // Destroy configuration maps and clean the DOM to save layout memory
-    window.storyMapsEmbedConfig = null;
-    document.getElementById("storymaps-target").innerHTML = "";
-    window.location.hash = ""; // Clear current anchor hash
-
-    // Toggle back visual dashboard visibility rules
+    // Clear out the iframe completely so audio/video/maps stop tracking in the background
+    document.getElementById("iframe-target").innerHTML = "";
+    
     document.getElementById("profileView").style.display = "none";
     document.getElementById("searchView").style.display = "flex";
     document.getElementById("zip").value = "";
 }
 
-// Global window event listener to submit values via Enter key
+// Global enter-key submit trigger
 document.getElementById("zip").addEventListener("keypress", function(e){
     if(e.key === "Enter"){
         lookupCommunity();

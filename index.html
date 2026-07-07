@@ -6,68 +6,72 @@
 <title>Community Profile Finder</title>
 
 <style>
-/* Reset page to allow full-bleed fullscreen elements */
+/* Fullscreen setup */
 html, body {
     margin: 0;
     padding: 0;
     width: 100%;
     height: 100%;
     font-family: "Avenir Next W01", "Avenir Next W00", "Avenir Next", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    background-color: #ffffff;
-    color: #2c2c2c;
     overflow: hidden;
+    background-color: #ffffff;
 }
 
-/* Clear, centered search card matching Esri brand styling */
-.search-view {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+/* The StoryMap container takes up 100% of the screen right away */
+.map-container {
     width: 100%;
     height: 100%;
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
-    z-index: 99999;
-    background-color: #f3f3f3;
+    z-index: 1;
 }
 
-.container {
-    max-width: 460px;
-    width: 90%;
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* Elegant floating search widget styled like an official ArcGIS map tool */
+.search-widget {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 999;
     background: #ffffff;
-    padding: 40px 35px;
+    padding: 20px;
     border-radius: 4px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    text-align: center;
-    border-top: 5px solid #0079c1; /* Esri Blue Bar */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border-top: 4px solid #0079c1; /* Esri Blue accent bar */
+    max-width: 300px;
+    width: 85%;
 }
 
-h2 {
-    margin-top: 0;
-    font-size: 24px;
+.search-widget h2 {
+    margin: 0 0 6px 0;
+    font-size: 16px;
     font-weight: 700;
     color: #151515;
-    margin-bottom: 12px;
 }
 
-p {
-    font-size: 14px;
-    line-height: 1.5;
+.search-widget p {
+    margin: 0 0 14px 0;
+    font-size: 13px;
     color: #595959;
-    margin-bottom: 24px;
+    line-height: 1.4;
 }
 
 .search-box {
     display: flex;
-    gap: 10px;
-    width: 100%;
+    gap: 8px;
 }
 
 input {
     flex: 1;
-    padding: 12px 16px;
-    font-size: 16px;
+    padding: 10px 12px;
+    font-size: 14px;
     border: 1px solid #b9b9b9;
     border-radius: 2px;
     outline: none;
@@ -81,8 +85,8 @@ button {
     background-color: #0079c1;
     color: #ffffff;
     border: none;
-    padding: 12px 24px;
-    font-size: 15px;
+    padding: 10px 16px;
+    font-size: 14px;
     font-weight: 600;
     border-radius: 2px;
     cursor: pointer;
@@ -95,48 +99,32 @@ button:hover {
 
 #error-msg {
     color: #a91616;
-    margin-top: 15px;
-    font-size: 14px;
+    margin-top: 8px;
+    font-size: 12px;
     font-weight: 600;
-}
-
-/* Fullscreen container for the StoryMap with absolutely no wrapper junk */
-.storymap-view {
-    display: none; 
-    width: 100%;
-    height: 100%;
-}
-
-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-    display: block;
 }
 </style>
 </head>
 <body>
 
-<!-- Step 1: Clean landing search container -->
-<div id="searchView" class="search-view">
-    <div class="container">
-        <h2>Find Your Community Profile</h2>
-        <p>Enter your ZIP code to explore housing affordability metrics within your target neighborhood block.</p>
-        <div class="search-box">
-            <input id="zip" type="text" placeholder="Enter ZIP Code" maxlength="5">
-            <button onclick="lookupCommunity()">View Profile</button>
-        </div>
-        <div id="error-msg"></div>
-    </div>
+<!-- The StoryMap is embedded and active immediately on page load -->
+<div class="map-container">
+    <iframe id="storymapFrame" src="https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed"></iframe>
 </div>
 
-<!-- Step 2: Uncluttered StoryMap stage -->
-<div id="storymapView" class="storymap-view">
-    <div id="iframeStage" style="width: 100%; height: 100%;"></div>
+<!-- Floating interaction widget over the live map -->
+<div class="search-widget">
+    <h2>Find Your Profile</h2>
+    <p>Enter your ZIP code to jump directly to your neighborhood metrics.</p>
+    <div class="search-box">
+        <input id="zip" type="text" placeholder="Enter ZIP Code" maxlength="5">
+        <button onclick="lookupCommunity()">Go</button>
+    </div>
+    <div id="error-msg"></div>
 </div>
 
 <script>
-// Dictionary connecting your neighborhood ZIP keys directly to the embedded story section hashes
+// Mapping your ZIP codes directly to the specific internal StoryMap section anchors
 const zipLookup = {
     "28104": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
     "28105": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
@@ -149,6 +137,7 @@ function lookupCommunity(){
     const zipInput = document.getElementById("zip").value.trim();
     const targetUrl = zipLookup[zipInput];
     const errorMsg = document.getElementById("error-msg");
+    const frame = document.getElementById("storymapFrame");
 
     if(!targetUrl){
         if(errorMsg) {
@@ -159,15 +148,11 @@ function lookupCommunity(){
 
     if(errorMsg) errorMsg.innerText = ''; 
 
-    // Inject the target StoryMap iframe directly at 100% height and width
-    document.getElementById("iframeStage").innerHTML = `<iframe src="${targetUrl}"></iframe>`;
-
-    // Swap layout visibility states instantly (Hiding search screen completely)
-    document.getElementById("searchView").style.display = "none";
-    document.getElementById("storymapView").style.display = "block";
+    // Directly changes the iframe destination anchor, forcing the live map to snap down
+    frame.src = targetUrl;
 }
 
-// Bind the Enter key functionality inside the search box input element
+// Submits the search automatically if the user presses Enter
 document.addEventListener("DOMContentLoaded", () => {
     const zipInput = document.getElementById("zip");
     if(zipInput) {

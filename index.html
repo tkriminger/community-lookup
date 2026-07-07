@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Community Profile Finder</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    text-align:center;
+    padding:20px;
+    margin:0;
+    background:#f8f8f8;
+}
+
+.container{
+    max-width:500px;
+    margin:auto;
+    background:white;
+    padding:25px;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+}
+
+h2{
+    margin-top:0;
+    color:#0079c1;
+}
+
+input{
+    padding:12px;
+    width:200px;
+    font-size:16px;
+    border:1px solid #ccc;
+    border-radius:4px;
+}
+
+button{
+    background:#0079c1;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:4px;
+    cursor:pointer;
+    margin-left:8px;
+}
+
+button:hover{
+    background:#005e95;
+}
+
+#result{
+    margin-top:20px;
+    font-size:18px;
+}
+
+.community{
+    color:green;
+    font-weight:bold;
+}
+
+.error{
+    color:red;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Find Your Community Profile</h2>
+
+    <p>Enter a ZIP Code</p>
+
+    <input
+        type="text"
+        id="zip"
+        placeholder="28105"
+        maxlength="5">
+
+    <button onclick="lookup()">
+        Search
+    </button>
+
+    <div id="result"></div>
+
+</div>
+
+<script>
+
+const zipLookup = {
+
+    "28104":"Matthews",
+    "28105":"Matthews",
+
+    "28079":"Indian Trail",
+
+    "28110":"Monroe",
+    "28112":"Monroe"
+
+    // Add future communities here:
+    // "28173":"Waxhaw",
+    // "28174":"Wingate",
+    // "28103":"Marshville",
+
+};
+
+function lookup(){
+
+    const zip =
+        document.getElementById("zip")
+        .value
+        .trim();
+
+    const community =
+        zipLookup[zip];
+
+    const result =
+        document.getElementById("result");
+
+    if(!community){
+
+        result.innerHTML =
+            '<div class="error">ZIP code not found.</div>';
+
+        return;
+    }
+
+    result.innerHTML =
+        '<div class="community">' +
+        community +
+        ', NC</div><br>' +
+        'Community profile available in the StoryMap below.';
+
+}
+
+// Allow Enter key
+
+document
+.getElementById("zip")
+.addEventListener("keypress", function(e){
+
+    if(e.key === "Enter"){
+        lookup();
+    }
+
+});
+
+</script>
+
+</body>
+</html>

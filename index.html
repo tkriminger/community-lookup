@@ -3,170 +3,196 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Community Profile Finder</title>
 
 <style>
-
-body{
+/* Full screen reset to mimic a native web app */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
     font-family: Arial, sans-serif;
-    background:#f5f5f5;
-    margin:0;
-    padding:20px;
+    background: #f5f5f5;
+    overflow: hidden;
 }
 
-.container{
-    max-width:600px;
-    margin:auto;
-    background:white;
-    padding:30px;
-    border-radius:12px;
-    box-shadow:0 2px 10px rgba(0,0,0,.15);
-    text-align:center;
+/* VIEW 1: Clean, centered lookup deck */
+.search-view {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }
 
-h2{
-    margin-top:0;
-    color:#0079c1;
+.container {
+    max-width: 500px;
+    width: 90%;
+    background: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,.1);
+    text-align: center;
 }
 
-p{
-    color:#555;
+h2 {
+    margin-top: 0;
+    color: #0079c1;
+    font-size: 24px;
 }
 
-input{
-    width:220px;
-    padding:12px;
-    font-size:16px;
-    border:1px solid #ccc;
-    border-radius:4px;
+p {
+    color: #555;
+    line-height: 1.5;
+    margin-bottom: 25px;
 }
 
-button{
-    background:#0079c1;
-    color:white;
-    border:none;
-    padding:12px 20px;
-    font-size:16px;
-    border-radius:4px;
-    cursor:pointer;
-    margin-left:8px;
+input {
+    width: 200px;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.2s;
 }
 
-button:hover{
-    background:#005e95;
+input:focus {
+    border-color: #0079c1;
 }
 
-#result{
-    margin-top:20px;
-    font-size:18px;
+button {
+    background: #0079c1;
+    color: white;
+    border: none;
+    padding: 14px 24px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 8px;
+    font-weight: bold;
 }
 
-.success{
-    color:green;
-    font-weight:bold;
+button:hover {
+    background: #005e95;
 }
 
-.error{
-    color:red;
-    font-weight:bold;
+#result {
+    margin-top: 20px;
 }
 
+.error {
+    color: #d9534f;
+    font-weight: bold;
+}
+
+/* VIEW 2: Full-screen profile engine (hidden initially) */
+.profile-view {
+    display: none; 
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: white;
+}
+
+/* Seamless frame layout */
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Floating dynamic back button */
+.back-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: #ffffff;
+    color: #333333;
+    padding: 10px 18px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 9999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    margin: 0;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: #f5f5f5;
+    transform: translateY(-1px);
+}
 </style>
 </head>
-
 <body>
 
-<div class="container">
+<!-- VIEW 1: The Landing / Lookup Screen -->
+<div id="searchView" class="search-view">
+    <div class="container">
+        <h2>Find Your Community Profile</h2>
+        <p>Enter your ZIP code to explore your neighborhood's tailored data insights instantly.</p>
+        
+        <input id="zip" type="text" placeholder="Enter ZIP Code" maxlength="5">
+        <button onclick="lookupCommunity()">View Profile</button>
+        
+        <div id="result"></div>
+    </div>
+</div>
 
-    <h2>Find Your Community Profile</h2>
-
-    <p>
-        Enter your ZIP code to go directly to the matching profile.
-    </p>
-
-    <input
-        id="zip"
-        type="text"
-        placeholder="Enter ZIP Code"
-        maxlength="5">
-
-    <button onclick="lookupCommunity()">
-        View Profile
-    </button>
-
-    <div id="result"></div>
-
+<!-- VIEW 2: The In-App StoryMap Player -->
+<div id="profileView" class="profile-view">
+    <button class="back-btn" onclick="goBack()">&larr; Change Location</button>
+    <iframe id="profileFrame" src=""></iframe>
 </div>
 
 <script>
-
+// Map your 25 different NPU / Neighborhood profiles directly here
 const zipLookup = {
-
-    // Matthews
-
-    "28104":
-    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-zUF5U0",
-
-    "28105":
-    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-zUF5U0",
-
-    // Indian Trail
-
-    "28079":
-    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-gSqDae",
-
-    // Monroe
-
-    "28110":
-    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-dh5C0l",
-
-    "28112":
-    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-dh5C0l"
-
+    "28104": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2",
+    "28105": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2",
+    "28079": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2",
+    "28110": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2"
 };
 
 function lookupCommunity(){
-
-    const zip =
-        document.getElementById("zip")
-        .value
-        .trim();
-
-    const target =
-        zipLookup[zip];
-
-    const result =
-        document.getElementById("result");
+    const zip = document.getElementById("zip").value.trim();
+    const target = zipLookup[zip];
+    const result = document.getElementById("result");
 
     if(!target){
-        result.innerHTML =
-            '<div class="error">ZIP code not found.</div>';
+        result.innerHTML = '<div class="error">ZIP code not found.</div>';
         return;
     }
 
-    result.innerHTML =
-        '<div class="success">Opening profile...</div>';
+    // Clear previous errors
+    result.innerHTML = '';
 
-    // 1. Direct same-window navigation
-    window.location.href = target;
-    
-    // 2. Fallback: If the base page was already open, force the browser to jump to the anchor
-    if (window.location.href.split('#')[0] === target.split('#')[0]) {
-        window.location.hash = target.split('#')[1] || '';
-    }
+    // 1. Set the source of the hidden frame to the specific profile
+    document.getElementById("profileFrame").src = target;
+
+    // 2. Smoothly switch screens in the exact same window
+    document.getElementById("searchView").style.display = "none";
+    document.getElementById("profileView").style.display = "block";
 }
 
-document
-.getElementById("zip")
-.addEventListener("keypress", function(e){
+function goBack() {
+    // Reset view states and unload the frame to free system resources
+    document.getElementById("profileFrame").src = "";
+    document.getElementById("profileView").style.display = "none";
+    document.getElementById("searchView").style.display = "flex";
+    document.getElementById("zip").value = "";
+}
 
+// Global enter key listener
+document.getElementById("zip").addEventListener("keypress", function(e){
     if(e.key === "Enter"){
         lookupCommunity();
     }
-
 });
-
 </script>
 
 </body>

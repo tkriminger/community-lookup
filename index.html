@@ -1,193 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Community Profile Finder</title>
+<title>Community Profile Finder</title>
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f7f7f7;
-      text-align: center;
-    }
+<style>
 
-    .container {
-      max-width: 520px;
-      margin: 0 auto;
-      background: #ffffff;
-      padding: 24px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-    }
+body{
+    font-family: Arial, sans-serif;
+    background:#f5f5f5;
+    margin:0;
+    padding:20px;
+}
 
-    h2 {
-      margin-top: 0;
-      color: #0079c1;
-      font-size: 24px;
-    }
+.container{
+    max-width:600px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    border-radius:12px;
+    box-shadow:0 2px 10px rgba(0,0,0,.15);
+    text-align:center;
+}
 
-    p {
-      color: #444;
-      font-size: 15px;
-    }
+h2{
+    margin-top:0;
+    color:#0079c1;
+}
 
-    .lookup-row {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 16px;
-    }
+p{
+    color:#555;
+}
 
-    input {
-      padding: 12px;
-      width: 180px;
-      font-size: 16px;
-      border: 1px solid #bbb;
-      border-radius: 6px;
-    }
+input{
+    width:220px;
+    padding:12px;
+    font-size:16px;
+    border:1px solid #ccc;
+    border-radius:4px;
+}
 
-    button {
-      padding: 12px 18px;
-      font-size: 16px;
-      background: #0079c1;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
+button{
+    background:#0079c1;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    font-size:16px;
+    border-radius:4px;
+    cursor:pointer;
+    margin-left:8px;
+}
 
-    button:hover {
-      background: #005e95;
-    }
+button:hover{
+    background:#005e95;
+}
 
-    #result {
-      margin-top: 18px;
-      font-size: 16px;
-    }
+#result{
+    margin-top:20px;
+    font-size:18px;
+}
 
-    .success {
-      color: #1a7f37;
-      font-weight: bold;
-      margin-bottom: 8px;
-    }
+.success{
+    color:green;
+    font-weight:bold;
+}
 
-    .error {
-      color: #b00020;
-      font-weight: bold;
-    }
+.error{
+    color:red;
+    font-weight:bold;
+}
 
-    .note {
-      font-size: 13px;
-      color: #555;
-      margin-top: 8px;
-    }
-  </style>
+</style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
+
     <h2>Find Your Community Profile</h2>
 
     <p>
-      Enter your ZIP code to jump to the matching community profile.
+        Enter your ZIP code to go directly to the matching profile.
     </p>
 
-    <div class="lookup-row">
-      <input
-        type="text"
+    <input
         id="zip"
+        type="text"
         placeholder="Enter ZIP Code"
-        maxlength="5"
-        inputmode="numeric"
-      />
+        maxlength="5">
 
-      <button onclick="lookupCommunity()">
+    <button onclick="lookupCommunity()">
         View Profile
-      </button>
-    </div>
+    </button>
 
     <div id="result"></div>
-  </div>
 
-  <script>
-    /*
-      Main StoryMap URL.
-      You only need to update this if your StoryMap URL changes.
-    */
-    const storyMapUrl = "https://arcg.is/1GmSTH";
+</div>
 
-    /*
-      ZIP Code to Profile Name lookup.
-      This is the only table you need to maintain as you grow to 25 profiles.
-    */
-    const zipLookup = {
-      "28104": "Matthews",
-      "28105": "Matthews",
+<script>
 
-      "28079": "Indian Trail",
+const zipLookup = {
 
-      "28110": "Monroe",
-      "28112": "Monroe"
+    // Matthews
 
-      // Add future ZIPs here:
-      // "28173": "Waxhaw",
-      // "28174": "Wingate",
-      // "28103": "Marshville"
-    };
+    "28104":
+    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-zUF5U0",
 
-    function lookupCommunity() {
-      const zip = document.getElementById("zip").value.trim();
-      const result = document.getElementById("result");
+    "28105":
+    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-zUF5U0",
 
-      const community = zipLookup[zip];
+    // Indian Trail
 
-      if (!community) {
+    "28079":
+    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-gSqDae",
+
+    // Monroe
+
+    "28110":
+    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-dh5C0l",
+
+    "28112":
+    "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2#ref-n-dh5C0l"
+
+};
+
+function lookupCommunity(){
+
+    const zip =
+        document.getElementById("zip")
+        .value
+        .trim();
+
+    const target =
+        zipLookup[zip];
+
+    const result =
+        document.getElementById("result");
+
+    if(!target){
+
         result.innerHTML =
-          '<div class="error">ZIP code not found in this demo.</div>' +
-          '<div class="note">Please check the ZIP code and try again.</div>';
+            '<div class="error">ZIP code not found.</div>';
+
         return;
-      }
-
-      result.innerHTML =
-        '<div class="success">Match found: ' + community + ', NC</div>' +
-        '<div class="note">Opening the matching profile...</div>';
-
-      /*
-        This builds a profile-name-based jump.
-
-        Example:
-        https://arcg.is/1GmSTH#:~:text=Matthews
-
-        The browser will try to scroll to the text "Matthews"
-        inside the published StoryMap.
-      */
-      const targetUrl =
-        storyMapUrl +
-        "#:~:text=" +
-        encodeURIComponent(community);
-
-      /*
-        Because this lookup is embedded in StoryMaps, window.top attempts
-        to navigate the full StoryMap page instead of only the embedded box.
-      */
-      window.top.location.href = targetUrl;
     }
 
-    /*
-      Let users press Enter instead of clicking the button.
-    */
-    document.getElementById("zip").addEventListener("keydown", function(event) {
-      if (event.key === "Enter") {
+    result.innerHTML =
+        '<div class="success">Opening profile...</div>';
+
+    window.top.location.href = target;
+}
+
+document
+.getElementById("zip")
+.addEventListener("keypress", function(e){
+
+    if(e.key === "Enter"){
         lookupCommunity();
-      }
-    });
-  </script>
+    }
+
+});
+
+</script>
 
 </body>
 </html>

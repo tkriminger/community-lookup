@@ -55,3 +55,75 @@
 
 <body>
 
+    <h2>Find Your Community Profile</h2>
+
+    <p>Enter a ZIP Code</p>
+
+    <input
+        type="text"
+        id="zip"
+        placeholder="28105"
+        maxlength="5">
+
+    <button onclick="lookup()">
+        View Profile
+    </button>
+
+    <div id="result"></div>
+
+    <script>
+
+        const zipLookup = {
+
+            "28104": "Matthews",
+            "28105": "Matthews",
+
+            "28079": "Indian Trail",
+
+            "28110": "Monroe",
+            "28112": "Monroe"
+
+            // Add more communities here later
+            // "28173": "Waxhaw",
+            // "28174": "Wingate",
+            // "28103": "Marshville"
+
+        };
+
+        function lookup() {
+
+            const zip =
+                document.getElementById("zip")
+                .value
+                .trim();
+
+            const result =
+                document.getElementById("result");
+
+            const community =
+                zipLookup[zip];
+
+            if (community) {
+
+                result.className = "success";
+
+                result.innerHTML =
+                    "✅ " +
+                    community +
+                    ", NC";
+
+            }
+            else {
+
+                result.className = "error";
+
+                result.innerHTML =
+                    "❌ ZIP code not found";
+
+            }
+        }
+
+    </script>
+
+</body>
+</html>

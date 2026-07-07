@@ -6,7 +6,7 @@
 <title>Community Profile Finder</title>
 
 <style>
-/* Base page shell setup */
+/* Reset page to allow full-bleed fullscreen elements */
 html, body {
     margin: 0;
     padding: 0;
@@ -18,7 +18,7 @@ html, body {
     overflow: hidden;
 }
 
-/* VIEW 1: Clean lookup screen styled like an ArcGIS landing page element */
+/* Clear, centered search card matching Esri brand styling */
 .search-view {
     display: flex;
     justify-content: center;
@@ -33,39 +33,35 @@ html, body {
 }
 
 .container {
-    max-width: 520px;
+    max-width: 460px;
     width: 90%;
     background: #ffffff;
     padding: 40px 35px;
     border-radius: 4px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     text-align: center;
-    border-top: 5px solid #0079c1; /* Esri Brand Blue Accent Bar */
+    border-top: 5px solid #0079c1; /* Esri Blue Bar */
 }
 
 h2 {
     margin-top: 0;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 700;
-    letter-spacing: -0.5px;
     color: #151515;
     margin-bottom: 12px;
 }
 
 p {
-    font-size: 15px;
+    font-size: 14px;
     line-height: 1.5;
     color: #595959;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
 }
 
 .search-box {
-    display: inline-flex;
-    justify-content: center;
-    width: 100%;
-    max-width: 380px;
+    display: flex;
     gap: 10px;
-    margin: 0 auto;
+    width: 100%;
 }
 
 input {
@@ -75,15 +71,13 @@ input {
     border: 1px solid #b9b9b9;
     border-radius: 2px;
     outline: none;
-    color: #2c2c2c;
-    transition: border-color 0.2s;
 }
 
 input:focus {
     border-color: #0079c1;
 }
 
-.primary-btn {
+button {
     background-color: #0079c1;
     color: #ffffff;
     border: none;
@@ -92,73 +86,23 @@ input:focus {
     font-weight: 600;
     border-radius: 2px;
     cursor: pointer;
-    transition: background-color 0.2s;
     white-space: nowrap;
 }
 
-.primary-btn:hover {
+button:hover {
     background-color: #005e95;
 }
 
-#result {
-    margin-top: 20px;
-    font-size: 15px;
-}
-
-.error {
+#error-msg {
     color: #a91616;
+    margin-top: 15px;
+    font-size: 14px;
     font-weight: 600;
 }
 
-/* VIEW 2: Clean Header layout with only your single change action requirement */
-.profile-view {
+/* Fullscreen container for the StoryMap with absolutely no wrapper junk */
+.storymap-view {
     display: none; 
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    background-color: #ffffff;
-}
-
-.context-header {
-    background-color: #ffffff;
-    padding: 12px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #e0e0e0;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
-    z-index: 9999;
-}
-
-.brand-title-group h3 {
-    margin: 0;
-    color: #151515;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-/* Exact dark green button background from your layout specification */
-.app-btn {
-    background-color: #006837; 
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    font-size: 13px;
-    font-weight: 600;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
-}
-
-.app-btn:hover {
-    background-color: #004d28;
-}
-
-/* The full viewport container hosting the StoryMap iframe content safely */
-.iframe-container {
-    flex-grow: 1;
     width: 100%;
     height: 100%;
 }
@@ -173,31 +117,26 @@ iframe {
 </head>
 <body>
 
+<!-- Step 1: Clean landing search container -->
 <div id="searchView" class="search-view">
     <div class="container">
         <h2>Find Your Community Profile</h2>
-        <p>Enter your ZIP code to go directly to the matching profile.</p>
+        <p>Enter your ZIP code to explore housing affordability metrics within your target neighborhood block.</p>
         <div class="search-box">
             <input id="zip" type="text" placeholder="Enter ZIP Code" maxlength="5">
-            <button class="primary-btn" onclick="lookupCommunity()">View Profile</button>
+            <button onclick="lookupCommunity()">View Profile</button>
         </div>
-        <div id="result"></div>
+        <div id="error-msg"></div>
     </div>
 </div>
 
-<div id="profileView" class="profile-view">
-    <div class="context-header">
-        <div class="brand-title-group">
-            <h3>Community Profile Viewer</h3>
-        </div>
-        <button class="app-btn" onclick="clearZipCode()">Change zip code</button>
-    </div>
-    
-    <div id="iframeStage" class="iframe-container"></div>
+<!-- Step 2: Uncluttered StoryMap stage -->
+<div id="storymapView" class="storymap-view">
+    <div id="iframeStage" style="width: 100%; height: 100%;"></div>
 </div>
 
 <script>
-// Dictionary connecting your neighborhood ZIP keys straight to the embedded story hashes/sections
+// Dictionary connecting your neighborhood ZIP keys directly to the embedded story section hashes
 const zipLookup = {
     "28104": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
     "28105": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
@@ -209,33 +148,23 @@ const zipLookup = {
 function lookupCommunity(){
     const zipInput = document.getElementById("zip").value.trim();
     const targetUrl = zipLookup[zipInput];
-    const result = document.getElementById("result");
+    const errorMsg = document.getElementById("error-msg");
 
     if(!targetUrl){
-        if(result) {
-            result.innerHTML = '<div class="error">ZIP code not found.</div>';
+        if(errorMsg) {
+            errorMsg.innerText = "ZIP code not found.";
         }
         return;
     }
 
-    if(result) result.innerHTML = ''; 
+    if(errorMsg) errorMsg.innerText = ''; 
 
-    // Inject the target StoryMap section URL straight into the clean view viewport
-    const stage = document.getElementById("iframeStage");
-    stage.innerHTML = `<iframe src="${targetUrl}"></iframe>`;
+    // Inject the target StoryMap iframe directly at 100% height and width
+    document.getElementById("iframeStage").innerHTML = `<iframe src="${targetUrl}"></iframe>`;
 
-    // Swap layout visibility states instantly
+    // Swap layout visibility states instantly (Hiding search screen completely)
     document.getElementById("searchView").style.display = "none";
-    document.getElementById("profileView").style.display = "flex";
-}
-
-function clearZipCode() {
-    // Clear out active document frame content 
-    document.getElementById("iframeStage").innerHTML = "";
-    // Toggle layouts back to initial entry look-up screen
-    document.getElementById("profileView").style.display = "none";
-    document.getElementById("searchView").style.display = "flex";
-    document.getElementById("zip").value = "";
+    document.getElementById("storymapView").style.display = "block";
 }
 
 // Bind the Enter key functionality inside the search box input element

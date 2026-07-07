@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Community Lookup</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 20px;
+      text-align: center;
+    }
+
+    input {
+      padding: 10px;
+      width: 150px;
+    }
+
+    button {
+      padding: 10px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h3>Find Your Community</h3>
+
+<input id="zip" placeholder="Enter ZIP Code">
+
+<button onclick="lookup()">
+View Profile
+</button>
+
+<script>
+
+const zipMap = {
+
+  "28105":"Matthews",
+  "28104":"Matthews",
+
+  "28079":"Indian Trail",
+
+  "28110":"Monroe",
+  "28112":"Monroe"
+
+};
+
+function lookup() {
+
+  const zip = document.getElementById("zip").value;
+
+  const community = zipMap[zip];
+
+  if(!community){
+    alert("ZIP code not found");
+    return;
+  }
+
+  localStorage.setItem(
+    "community",
+    community
+  );
+
+  window.parent.postMessage(
+    {
+      community: community
+    },
+    "*"
+  );
+
+}
+
+</script>
+
+</body>
+</html>

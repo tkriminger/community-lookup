@@ -140,17 +140,21 @@ function lookupCommunity(){
         document.getElementById("result");
 
     if(!target){
-
         result.innerHTML =
             '<div class="error">ZIP code not found.</div>';
-
         return;
     }
 
     result.innerHTML =
         '<div class="success">Opening profile...</div>';
 
-    window.open(target, "_top");
+    // 1. Direct same-window navigation
+    window.location.href = target;
+    
+    // 2. Fallback: If the base page was already open, force the browser to jump to the anchor
+    if (window.location.href.split('#')[0] === target.split('#')[0]) {
+        window.location.hash = target.split('#')[1] || '';
+    }
 }
 
 document

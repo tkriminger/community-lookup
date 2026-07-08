@@ -122,7 +122,7 @@ button:hover {
 </div>
 
 <script>
-// Maps individual ZIP codes to their respective Section Anchors to fix scrolling
+// Maps your custom ZIP codes directly back to their section anchors inside the main StoryMap
 const zipLookup = {
     "28104": "#ref-n-zUF5U0",
     "28105": "#ref-n-zUF5U0",
@@ -136,6 +136,7 @@ function lookupCommunity(){
     const errorMsg = document.getElementById("error-msg");
     const frame = document.getElementById("storymapFrame");
 
+    // 1. Validate that the input is a proper 5-digit number
     if (!zipInput || zipInput.length !== 5 || isNaN(zipInput)) {
         if (errorMsg) {
             errorMsg.innerText = "Please enter a valid 5-digit ZIP code.";
@@ -153,13 +154,14 @@ function lookupCommunity(){
 
     if (errorMsg) errorMsg.innerText = ''; 
 
-    // Base URL of your focus StoryMap layout
+    // 2. Base URL of your focus StoryMap layout
     const baseStoryUrl = "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed";
 
-    // Combines scrolling hash anchor with the parameters passed down to Experience Builder
-    const targetUrl = `${baseStoryUrl}&var_zipcode=${zipInput}${sectionAnchor}`;
+    // 3. Dynamic URL query creation using safe syntax to handle parameters 
+    const parentVariableQuery = "&var_zipcode=" + zipInput;
 
-    frame.src = targetUrl;
+    // 4. Update the iframe location safely 
+    frame.src = baseStoryUrl + parentVariableQuery + sectionAnchor;
 }
 
 // Submits the search automatically if the user presses Enter

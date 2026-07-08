@@ -124,12 +124,19 @@ button:hover {
 </div>
 
 <script>
+// IMPORTANT STEP: 
+// 1. Open your published StoryMap in a browser.
+// 2. Scroll directly down to where your Experience Builder map block sits.
+// 3. Look at your address bar and copy the trailing section identifier (e.g., #ref-n-zUF5U0).
+// 4. Paste that exact section text string below into MAP_SECTION_ANCHOR.
+const MAP_SECTION_ANCHOR = "#ref-n-zUF5U0"; 
+
 function lookupCommunity(){
     const zipInput = document.getElementById("zip").value.trim();
     const errorMsg = document.getElementById("error-msg");
     const frame = document.getElementById("storymapFrame");
 
-    // 1. Validate that the input is a proper 5-digit number
+    // Validate that the input is a proper 5-digit number
     if (!zipInput || zipInput.length !== 5 || isNaN(zipInput)) {
         if (errorMsg) {
             errorMsg.innerText = "Please enter a valid 5-digit ZIP code.";
@@ -139,15 +146,17 @@ function lookupCommunity(){
 
     if (errorMsg) errorMsg.innerText = ''; 
 
-    // 2. Base URL of your focus StoryMap
+    // Base URL of your focus StoryMap layout
     const baseStoryUrl = "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed";
 
-    // 3. Dynamic URL query creation using standard Esri StoryMaps framework parameter formatting
-    // This injects var_zipcode into the StoryMap, which passes it natively down to your Experience Builder embed component.
-    const targetUrl = `${baseStoryUrl}&var_zipcode=${zipInput}`;
+    // Standard Esri parameter pattern to tell StoryMap to forward parameter queries downward
+    const parentVariableQuery = `&var_zipcode=${zipInput}`;
 
-    // 4. Update the iframe source to pass the parameter down
-    frame.src = targetUrl;
+    // Target the specific section anchor of your StoryMap layout so the viewport jumps to the map block
+    const finalTargetUrl = `${baseStoryUrl}${parentVariableQuery}${MAP_SECTION_ANCHOR}`;
+
+    // Update the iframe destination to run the combined focus jump and selection
+    frame.src = finalTargetUrl;
 }
 
 // Submits the search automatically if the user presses Enter

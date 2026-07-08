@@ -107,12 +107,12 @@ button:hover {
 </head>
 <body>
 
-<!-- The StoryMap is embedded and active immediately on page load -->
+<!-- The Focus StoryMap framework, active immediately on page load -->
 <div class="map-container">
     <iframe id="storymapFrame" src="https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed"></iframe>
 </div>
 
-<!-- Floating interaction widget over the live map -->
+<!-- Floating interaction widget over the live map framework -->
 <div class="search-widget">
     <h2>Find Your Profile</h2>
     <p>Enter your ZIP code to jump directly to your neighborhood metrics.</p>
@@ -124,31 +124,29 @@ button:hover {
 </div>
 
 <script>
-// Mapping your ZIP codes directly to the specific internal StoryMap section anchors
-const zipLookup = {
-    "28104": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
-    "28105": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-zUF5U0",
-    "28079": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-gSqDae",
-    "28110": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-dh5C0l",
-    "28112": "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed#ref-n-dh5C0l"
-};
-
 function lookupCommunity(){
     const zipInput = document.getElementById("zip").value.trim();
-    const targetUrl = zipLookup[zipInput];
     const errorMsg = document.getElementById("error-msg");
     const frame = document.getElementById("storymapFrame");
 
-    if(!targetUrl){
-        if(errorMsg) {
-            errorMsg.innerText = "ZIP code not found.";
+    // 1. Validate that the input is a proper 5-digit number
+    if (!zipInput || zipInput.length !== 5 || isNaN(zipInput)) {
+        if (errorMsg) {
+            errorMsg.innerText = "Please enter a valid 5-digit ZIP code.";
         }
         return;
     }
 
-    if(errorMsg) errorMsg.innerText = ''; 
+    if (errorMsg) errorMsg.innerText = ''; 
 
-    // Directly changes the iframe destination anchor, forcing the live map to snap down
+    // 2. Base URL of your focus StoryMap
+    const baseStoryUrl = "https://storymaps.arcgis.com/stories/95885c16aa0649d0a1050c363b47a4e2?embed";
+
+    // 3. Dynamic URL query creation using standard Esri StoryMaps framework parameter formatting
+    // This injects var_zipcode into the StoryMap, which passes it natively down to your Experience Builder embed component.
+    const targetUrl = `${baseStoryUrl}&var_zipcode=${zipInput}`;
+
+    // 4. Update the iframe source to pass the parameter down
     frame.src = targetUrl;
 }
 
